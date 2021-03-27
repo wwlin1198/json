@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+ 
+<html>
+    <head>
+
+        <style>
+            form{
+                font-size: 130%;
+            }
+        </style>
+
+        <meta charset="utf-8">
+        <title>Willy's List</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name = "author" content="Willy (Wo Wei) Lin">
+        <meta name = "viewport" content="width=device-width, initial-scale =1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link href="songs.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <form onsubmit = "return false"> Sort by Genre: 
+                <select id="sort_choices"> 
+                    <option id="Default">All Genres</option>
+                    <option id="rap">Rap</option>
+                    <option id="pop">Pop</option>
+                    <option id="electronic">Electronic</option>
+                    <option id="r and b">R and B</option>
+                </select>
+            <button type="submit" id="sort" value="Filter" >Filter By Genre</button>
+        </form>
+        <br>
+ 
+        <div id="playList"></div>
+        <script language="javascript">
+ 
+      
+        $(document).ready(sort(0));
+        var all_genres = ["All genres", "rap", "pop", "electronic","r and b"  ];
+     
+ 
+        function SpecificGenre(findGenre, arr) {
+ 
+            if (findGenre == "All genres"){
+                return true;
+            }
+ 
+            for (var j = 0; j < arr.length; j++) 
+            {
+                if (findGenre == arr[j])
+                    return true;
+            }
+            
+            return false;
+        }
+ 
+    
+        function sort(genreSort) {
+            $.getJSON('setlist.json', function(info) 
+            {
+                info_str = JSON.stringify(info);
+                info_arr = JSON.parse(info_str);
+                infoData = "";
+        
+             
+                for(var i = 0; i < 10; i++) {    
+                    if (SpecificGenre(all_genres[genreSort], info_arr[i].genre)) {
+                     
+             
+                        infoData += "<div class='info'><strong>" + info_arr[i].title + "</strong></div>";
+                        infoData += "<div  class='info''> Artist/s: " + info_arr[i].artists + "<br/>";
+                        infoData += "Genre: ";
+                     
+                        
+                        for(var k = 0; k < info_arr[i].genre.length; k++)
+                         {
+                            infoData += info_arr[i].genre[k];
+                                
+                        }
+                        infoData += "<br/>";
+                        infoData += "Year: " + info_arr[i].year_released + "</div>";
+                        infoData += "<hr>";
+                    }
+                }
+                document.getElementById("playList").innerHTML = infoData;
+             }
+             )
+            }
+ 
+    </script>   
+ 
+ 
+<script language = "javascript">
+    $('#sort').on('click', function() {
+ 
+        if($("#sort_choices").prop('selectedIndex') == 0)
+        {
+            sort(0);
+        }
+           
+        else{
+            sort($("#sort_choices").prop('selectedIndex'));
+        }
+            
+    });
+</script>
+ 
+    </body>
+</html>
